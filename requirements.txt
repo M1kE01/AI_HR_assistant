@@ -1,7 +1,9 @@
 streamlit
 faster-whisper
-ctranslate2==3.20.0 --extra-index-url https://download.argosopentech.com/whl/cpu
+ctranslate2==3.20.0
 ffmpeg-python
 transformers
-torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+torch
+torchaudio
+torchvision
 yt-dlp
