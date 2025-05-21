@@ -10,6 +10,7 @@ import sys
 import time
 from transformers import pipeline, logging as hf_logging
 from faster_whisper import WhisperModel
+from yt_dlp import YoutubeDL
 
 hf_logging.set_verbosity_error()
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
@@ -21,10 +22,19 @@ def download_audio(input_path_or_url, output_path="audio.wav"):
     temp_pattern = "temp_audio.%(ext)s"
     if "youtube.com" in input_path_or_url or "youtu.be" in input_path_or_url:
         st.info("📥 Downloading YouTube audio...")
-        subprocess.run([
-            "python", "-m", "yt_dlp", "-f", "bestaudio", "-x",
-            "--audio-format", "m4a", "-o", temp_pattern, input_path_or_url
-        ], check=True)
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': temp_pattern,
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'm4a',
+            }],
+            'quiet': True,
+            'no_warnings': True,
+        }
+
+        with YoutubeDL(ydl_opts) as ydl:
+            ydl.download([input_path_or_url])
         temp_files = glob.glob("temp_audio.*")
         if not temp_files:
             raise FileNotFoundError("Download failed.")
