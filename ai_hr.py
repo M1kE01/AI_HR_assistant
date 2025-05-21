@@ -14,7 +14,7 @@ from faster_whisper import WhisperModel
 hf_logging.set_verbosity_error()
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
-API_KEY = "AIzaSyAWPPdehzURm0h0TPwurIqq8fje33aTMUQ"
+API_KEY = ""
 
 # Download and convert
 def download_audio(input_path_or_url, output_path="audio.wav"):
