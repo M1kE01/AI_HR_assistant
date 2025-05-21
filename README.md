@@ -20,7 +20,10 @@ This Streamlit app allows you to evaluate spoken English in videos using a combi
 
 ## 📸 Demo
 
-![screenshot](screenshot.png) <!-- Optional: include a screenshot of your UI -->
+<p align="center">
+  <img src="image_1.png" alt="Screenshot 1" width="48%" />
+  <img src="image_2.png" alt="Screenshot 2" width="48%" />
+</p>
 
 ---
 
