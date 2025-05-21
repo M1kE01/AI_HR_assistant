@@ -11,6 +11,9 @@ import time
 from transformers import pipeline, logging as hf_logging
 from faster_whisper import WhisperModel
 from yt_dlp import YoutubeDL
+import os
+
+os.environ["STREAMLIT_WATCHER_TYPE"] = "none"
 
 hf_logging.set_verbosity_error()
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
