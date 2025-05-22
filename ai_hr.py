@@ -75,6 +75,9 @@ def download_audio(input_path_or_url, output_path="audio.wav"):
 # Transcribe
 def transcribe_audio(audio_path):
     st.info("📝 Transcribing...")
+    if info.duration > 300:
+        st.error("❌ This audio is too long. Please use a clip under 5 minutes.")
+        return ""
 
     try:
         model = get_whisper_model()
@@ -129,7 +132,7 @@ This is a transcript of a spoken English video. Please do the following:
 2. Provide a short 2–3 sentence evaluation of their speaking quality.
 
 Transcript:
-{transcript_text[:3000]}
+{transcript_text[:1500]}
 """
     data = {
         "contents": [{"parts": [{"text": prompt_text}]}]
