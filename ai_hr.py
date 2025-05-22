@@ -14,6 +14,7 @@ import time
 from transformers import pipeline, logging as hf_logging
 from faster_whisper import WhisperModel
 from yt_dlp import YoutubeDL
+import threading
 
 hf_logging.set_verbosity_error()
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
@@ -27,6 +28,30 @@ def get_whisper_model():
 @st.cache_resource
 def get_classifier():
     return pipeline("audio-classification", model="dima806/english_accents_classification")
+
+def transcribe_with_timeout(audio_path, timeout=90):
+    result = {}
+
+    def worker():
+        try:
+            model = get_whisper_model()
+            segments_gen, info = model.transcribe(audio_path)
+            result["segments"] = list(segments_gen)
+            result["info"] = info
+        except Exception as e:
+            result["error"] = str(e)
+
+    thread = threading.Thread(target=worker)
+    thread.start()
+    thread.join(timeout)
+
+    if thread.is_alive():
+        raise TimeoutError("Transcription timed out.")
+
+    if "error" in result:
+        raise RuntimeError(result["error"])
+
+    return result["segments"], result["info"]
 
 # Download and convert
 def download_audio(input_path_or_url, output_path="audio.wav"):
@@ -76,8 +101,10 @@ def download_audio(input_path_or_url, output_path="audio.wav"):
 def transcribe_audio(audio_path):
     st.info("📝 Transcribing...")
     try:
-        model = get_whisper_model()
-        segments, info = model.transcribe(audio_path) 
+        #model = get_whisper_model()
+        #segments_gen, info = model.transcribe(audio_path)
+        segments, info = transcribe_with_timeout(audio_path)
+        #segments = list(segments_gen)  # materialize fully
 
         if info.duration > 300:
             st.error("❌ This audio is too long. Please use a clip under 5 minutes.")
@@ -89,7 +116,7 @@ def transcribe_audio(audio_path):
 
     full_text = ""
     progress = st.progress(0, text="Processing transcription...")
-    segments = list(segments)
+    #segments = list(segments)
     total = len(segments)
     for i, segment in enumerate(segments):
         full_text += segment.text.strip() + "\n"
