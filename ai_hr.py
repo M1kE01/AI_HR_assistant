@@ -75,13 +75,14 @@ def download_audio(input_path_or_url, output_path="audio.wav"):
 # Transcribe
 def transcribe_audio(audio_path):
     st.info("📝 Transcribing...")
-    if info.duration > 300:
-        st.error("❌ This audio is too long. Please use a clip under 5 minutes.")
-        return ""
-
     try:
         model = get_whisper_model()
         segments, info = model.transcribe(audio_path) 
+
+        if info.duration > 300:
+            st.error("❌ This audio is too long. Please use a clip under 5 minutes.")
+            return ""
+
     except Exception as e:
         st.error(f"❌ Transcription failed: {e}")
         return ""
