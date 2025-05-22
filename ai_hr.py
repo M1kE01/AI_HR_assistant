@@ -1,3 +1,6 @@
+import os
+os.environ["STREAMLIT_WATCHER_TYPE"] = "none"
+
 import streamlit as st
 import subprocess
 import os
@@ -11,14 +14,19 @@ import time
 from transformers import pipeline, logging as hf_logging
 from faster_whisper import WhisperModel
 from yt_dlp import YoutubeDL
-import os
-
-os.environ["STREAMLIT_WATCHER_TYPE"] = "none"
 
 hf_logging.set_verbosity_error()
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 API_KEY = st.secrets["API_KEY"]
+
+@st.cache_resource
+def get_whisper_model():
+    return WhisperModel("tiny", compute_type="int8", device="cpu")
+
+@st.cache_resource
+def get_classifier():
+    return pipeline("audio-classification", model="dima806/english_accents_classification")
 
 # Download and convert
 def download_audio(input_path_or_url, output_path="audio.wav"):
@@ -53,7 +61,11 @@ def download_audio(input_path_or_url, output_path="audio.wav"):
         raise ValueError("Unsupported input type")
 
     st.info("🔄 Converting to WAV...")
-    ffmpeg.input(temp_video).output(output_path, ac=1, ar=16000).run(overwrite_output=True)
+    try:
+        ffmpeg.input(temp_video).output(output_path, ac=1, ar=16000).run(overwrite_output=True, capture_stdout=True, capture_stderr=True)
+    except ffmpeg.Error as e:
+        st.error(f"❌ ffmpeg error:\n{e.stderr.decode()}")
+        raise
 
     if temp_video != input_path_or_url and os.path.exists(temp_video):
         os.remove(temp_video)
@@ -65,7 +77,7 @@ def transcribe_audio(audio_path):
     st.info("📝 Transcribing...")
 
     try:
-        model = WhisperModel("tiny", compute_type="int8", device="cpu") 
+        model = get_whisper_model()
         segments, info = model.transcribe(audio_path) 
     except Exception as e:
         st.error(f"❌ Transcription failed: {e}")
@@ -87,7 +99,7 @@ def classify_accent(audio_path):
 
     progress = st.progress(0, text="Loading model...")
     try:
-        classifier = pipeline("audio-classification", model="dima806/english_accents_classification")
+        classifier = get_classifier()
         progress.progress(30, text="Analyzing audio...")
 
         # Simulate progress to give visual feedback
