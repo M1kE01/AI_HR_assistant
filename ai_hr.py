@@ -97,6 +97,16 @@ def download_audio(input_path_or_url, output_path="audio.wav"):
 
     return output_path
 
+def trim_audio(input_path, output_path="trimmed_audio.wav", duration=60):
+    try:
+        ffmpeg.input(input_path).output(output_path, t=duration).run(
+            overwrite_output=True, capture_stdout=True, capture_stderr=True
+        )
+        return output_path
+    except ffmpeg.Error as e:
+        st.error(f"❌ Failed to trim audio:\n{e.stderr.decode()}")
+        raise
+
 # Transcribe
 def transcribe_audio(audio_path):
     st.info("📝 Transcribing...")
@@ -128,22 +138,30 @@ def transcribe_audio(audio_path):
 def classify_accent(audio_path):
     st.info("🔍 Classifying accent...")
 
-    progress = st.progress(0, text="Loading model...")
+    progress = st.progress(0, text="Trimming audio to 60 seconds...")
     try:
-        classifier = get_classifier()
-        progress.progress(30, text="Analyzing audio...")
+        # Trim to first 60 seconds
+        trimmed_audio = trim_audio(audio_path)
 
-        # Simulate progress to give visual feedback
+        progress.progress(30, text="Loading model...")
+        classifier = get_classifier()
+
+        # Simulate progress visually
         for i in range(30, 90, 10):
             time.sleep(0.2)
             progress.progress(i / 100.0, text="Classifying...")
 
-        result = classifier(audio_path)
+        result = classifier(trimmed_audio)
         progress.progress(100, text="Done!")
         time.sleep(0.2)
         progress.empty()
 
+        # Delete the temporary trimmed audio file
+        if os.path.exists(trimmed_audio):
+            os.remove(trimmed_audio)
+
         return result[0]["label"], result[0]["score"]
+
     except Exception as e:
         progress.empty()
         st.error(f"❌ Accent classification failed: {e}")
