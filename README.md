@@ -18,6 +18,22 @@ This Streamlit app allows you to evaluate spoken English in videos using a combi
 
 ---
 
+## ⚠️ Limitations & Notes
+
+- ⏱️ **Max video length: 5 minutes**  
+  Due to memory limits on Streamlit Cloud, only short videos (under 5 minutes) are supported for now. Longer videos may crash the app or timeout.
+
+- 🧠 **Using the "tiny" Whisper model**  
+  The app uses the `tiny` variant of the `faster-whisper` model to reduce RAM usage. This keeps things fast and lightweight but may reduce transcription accuracy, especially for nuanced or unclear speech.
+
+- 🔬 **Room for improvement**  
+  This is intended as a **proof of concept**. For production use, consider:
+  - Using a larger Whisper model (e.g. `base`, `medium`) if resources allow
+  - Improving preprocessing (noise reduction, speaker diarization)
+  - Providing better UX/error handling for long videos or poor audio quality
+
+---
+
 ## 📸 Demo
 
 <p align="center">

@@ -193,15 +193,27 @@ Transcript:
 
 # Streamlit UI
 st.title("🗣️ English Accent & Fluency Evaluator")
-video_input = st.text_input("Paste a YouTube URL or video link:")
+st.markdown("**⚠️ Please note: Only videos shorter than 5 minutes are supported.**")
+
+col1, col2 = st.columns(2)
+video_input = col1.text_input("📎 Paste a YouTube link")
+uploaded_file = col2.file_uploader("📁 Or upload a .mp4 file (max 5 min)", type=["mp4"])
 
 if st.button("Analyze"):
-    if not video_input:
-        st.warning("Please enter a video URL.")
+    if not video_input and not uploaded_file:
+        st.warning("Please enter a YouTube URL or upload a video file.")
     else:
         try:
             with st.status("📥 Downloading and converting audio...", expanded=True):
-                audio_path = download_audio(video_input)
+                if uploaded_file:
+                    temp_path = "uploaded_video.mp4"
+                    with open(temp_path, "wb") as f:
+                        f.write(uploaded_file.read())
+                    audio_path = download_audio(temp_path)
+                    os.remove(temp_path)
+                else:
+                    audio_path = download_audio(video_input)
+
                 st.success("✅ Audio downloaded and converted.")
 
             with st.status("📝 Transcribing audio...", expanded=True):
