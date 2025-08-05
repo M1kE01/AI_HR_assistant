@@ -1,4 +1,4 @@
-# 🗣️ English Accent & Fluency Evaluator
+# English Accent & Fluency Evaluator
 
 This Streamlit app allows you to evaluate spoken English in videos using a combination of:
 - **YouTube or direct video URL audio extraction**
@@ -8,25 +8,25 @@ This Streamlit app allows you to evaluate spoken English in videos using a combi
 
 ---
 
-## 🚀 Features
+## Features
 
-- 📥 Download and convert audio from YouTube or direct URLs
-- 📝 Transcribe audio using `faster-whisper`
-- 🔍 Detect the speaker's English accent (e.g. British, American, Indian, etc.)
-- 🤖 Evaluate speaking fluency and quality via Google Gemini
-- 📊 Visual feedback during all stages, including progress bars
+- Download and convert audio from YouTube or direct URLs
+- Transcribe audio using `faster-whisper`
+- Detect the speaker's English accent (e.g. British, American, Indian, etc.)
+- Evaluate speaking fluency and quality via Google Gemini
+- Visual feedback during all stages, including progress bars
 
 ---
 
-## ⚠️ Limitations & Notes
+## Limitations & Notes
 
-- ⏱️ **Max video length: 5 minutes**  
+- **Max video length: 5 minutes**  
   Due to memory limits on Streamlit Cloud, only short videos (under 5 minutes) are supported for now. Longer videos may crash the app or timeout.
 
-- 🧠 **Using the "tiny" Whisper model**  
+- **Using the "tiny" Whisper model**  
   The app uses the `tiny` variant of the `faster-whisper` model to reduce RAM usage. This keeps things fast and lightweight but may reduce transcription accuracy, especially for nuanced or unclear speech.
 
-- 🔬 **Room for improvement**  
+- **Room for improvement**  
   This is intended as a **proof of concept**. For production use, consider:
   - Using a larger Whisper model (e.g. `base`, `medium`) if resources allow
   - Improving preprocessing (noise reduction, speaker diarization)
@@ -34,7 +34,7 @@ This Streamlit app allows you to evaluate spoken English in videos using a combi
 
 ---
 
-## 📸 Demo
+## Demo
 
 <p align="center">
   <img src="image_1.png" alt="Screenshot 1" width="48%" />
@@ -43,7 +43,7 @@ This Streamlit app allows you to evaluate spoken English in videos using a combi
 
 ---
 
-## 🧩 Dependencies
+## Dependencies
 
 Make sure you have **Python 3.10 or 3.11**. Python 3.13+ may cause runtime errors due to incompatibility with PyTorch.
 
